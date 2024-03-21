@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
       initialRoute: "/Tarefas",
       onGenerateRoute: (RouteSettings settings) {
         if(settings.name == '/Tarefas'){
-        return MaterialPageRoute (builder: (context) => TaskInherited(child: const InitialScreen()));}
+        return MaterialPageRoute (builder: (context) => TaskInherited(child: InitialScreen()));}
         else if(settings.name == '/addTask'){
-        return MaterialPageRoute (builder: (context) => FormScreen(taskContext: settings.arguments));}
+        return MaterialPageRoute (builder: (context) => FormScreen(taskContext: settings.arguments as BuildContext));}
         return null;
       },
     );

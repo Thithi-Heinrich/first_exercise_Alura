@@ -1,7 +1,5 @@
-import 'dart:ui';
-
+import 'package:first_exercise/data/task_inherited.dart';
 import 'package:flutter/material.dart';
-
 import 'colors.dart';
 import 'difficulty.dart';
 
@@ -10,16 +8,25 @@ class Task extends StatefulWidget {
   final String image;
   final int dificuldade;
 
-  const Task(this.nome, this.dificuldade, {super.key, this.image = 'src'});
+  Task(this.nome, this.dificuldade, {super.key, this.image = 'src'});
+
+  int nivel = 0;
+  int color = 0;
+  Color hashcolor = Colors.blue;
 
   @override
   State<Task> createState() => _TaskState();
 }
 
 class _TaskState extends State<Task> {
-  int nivel = 0;
-  int color = 0;
-  Color hashcolor = Colors.blue;
+
+
+  bool assetOrNetwork() {
+    if (widget.image.contains('http')) {
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +37,7 @@ class _TaskState extends State<Task> {
           Container(
             height: 140,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4), color: hashcolor),
+                borderRadius: BorderRadius.circular(4), color: widget.hashcolor),
           ),
           Column(
             children: [
@@ -50,10 +57,15 @@ class _TaskState extends State<Task> {
                       height: 100,
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(4),
-                          child: Image.asset(
-                            widget.image,
-                            fit: BoxFit.cover,
-                          )),
+                          child: assetOrNetwork()
+                              ? Image.asset(
+                                  widget.image,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  widget.image,
+                                  fit: BoxFit.cover,
+                                )),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -86,12 +98,14 @@ class _TaskState extends State<Task> {
                                       borderRadius: BorderRadius.circular(4)))),
                           onPressed: () {
                             setState(() {
-                              if (nivel < (widget.dificuldade * 10)) {
-                                nivel++;
-                              } else if(nivel == (widget.dificuldade * 10) && color < 6){
-                                nivel = 0;
-                                color++;
-                                hashcolor = colorChanging(color);
+                              if (widget.nivel < (widget.dificuldade * 10)) {
+                                widget.nivel++;
+                              } else if (widget.nivel == (widget.dificuldade * 10) &&
+                                  widget.color < 6) {
+                                widget.nivel = 0;
+                                widget.color++;
+                                widget.hashcolor = colorChanging(widget.color);
+                                TaskInherited.of(context).nivelGlobalUpgrade;
                               }
                             });
                           },
@@ -123,10 +137,10 @@ class _TaskState extends State<Task> {
                           backgroundColor:
                               const Color.fromARGB(100, 255, 255, 255),
                           value: (widget.dificuldade > 0)
-                              ? ((nivel / (widget.dificuldade)) / 10)
+                              ? (widget.nivel / widget.dificuldade / 10)
                               : 1,
                         )),
-                    Text('Nível: $nivel',
+                    Text('Nível: ${widget.nivel}',
                         style:
                             const TextStyle(color: Colors.white, fontSize: 18)),
                   ],
